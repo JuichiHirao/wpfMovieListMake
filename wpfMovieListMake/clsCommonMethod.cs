@@ -139,7 +139,9 @@ namespace wpfMovieListMake
         {
             List<SiteStore> listSiteStore = new List<SiteStore>();
 
-            string queryString = "SELECT ID, NAME, PATH, KIND FROM MOVIE_SITESTORE ORDER BY NAME, PATH";
+            //string queryString = "SELECT ID, NAME, PATH, KIND FROM MOVIE_SITESTORE ORDER BY NAME, PATH";
+            string queryString = "SELECT ID, NAME, EXPLANATION, LABEL, KIND FROM MOVIE_GROUP WHERE KIND = 3 ORDER BY NAME, EXPLANATION";
+
             SqlCommand command = new SqlCommand(queryString, myDbCon.getSqlConnection());
 
             myDbCon.openConnection();
@@ -154,8 +156,9 @@ namespace wpfMovieListMake
 
                     site.Id = DbExportCommon.GetDbInt(reader, 0);
                     site.Name = DbExportCommon.GetDbString(reader, 1);
-                    site.Path = DbExportCommon.GetDbString(reader, 2);
-                    site.Kind = DbExportCommon.GetDbInt(reader, 3);
+                    site.Explanation = DbExportCommon.GetDbString(reader, 2);
+                    site.Label = DbExportCommon.GetDbString(reader, 3);
+                    site.Kind = DbExportCommon.GetDbInt(reader, 4);
 
                     listSiteStore.Add(site);
                 }
@@ -176,18 +179,21 @@ namespace wpfMovieListMake
         {
             List<SiteInfo> listSiteInfo = new List<SiteInfo>();
 
-            string cmdUpdate = "INSERT INTO MOVIE_SITESTORE( NAME, PATH, KIND) VALUES (@pName, @pPath, @pKind)";
+            string cmdUpdate = "INSERT INTO MOVIE_SITESTORE(NAME, LABEL, EXPLANATION, KIND) VALUES (@pName, @pLabel, @pExplanation, @pKind)";
 
-            SqlParameter[] sqlparams = new SqlParameter[3];
+            SqlParameter[] sqlparams = new SqlParameter[4];
 
             sqlparams[0] = new SqlParameter("@pName", SqlDbType.VarChar);
             sqlparams[0].Value = myTargetData.Name;
 
-            sqlparams[1] = new SqlParameter("@pPath", SqlDbType.VarChar);
-            sqlparams[1].Value = myTargetData.Path;
+            sqlparams[1] = new SqlParameter("@pLabel", SqlDbType.VarChar);
+            sqlparams[1].Value = myTargetData.Label;
 
-            sqlparams[2] = new SqlParameter("@pKind", SqlDbType.Int);
-            sqlparams[2].Value = myTargetData.Kind;
+            sqlparams[2] = new SqlParameter("@pExplanation", SqlDbType.VarChar);
+            sqlparams[2].Value = myTargetData.Explanation;
+
+            sqlparams[3] = new SqlParameter("@pKind", SqlDbType.Int);
+            sqlparams[3].Value = myTargetData.Kind;
 
             myDbCon.openConnection();
 
@@ -208,21 +214,24 @@ namespace wpfMovieListMake
         {
             List<SiteInfo> listSiteInfo = new List<SiteInfo>();
 
-            string cmdUpdate = "UPDATE MOVIE_SITESTORE SET NAME = @pName, PATH = @pPath, KIND = @pKind WHERE ID = @pId";
+            string cmdUpdate = "UPDATE MOVIE_SITESTORE SET NAME = @pName, LABEL = @pLabel, EXPLANATION = @pExplanation, KIND = @pKind WHERE ID = @pId";
 
-            SqlParameter[] sqlparams = new SqlParameter[4];
+            SqlParameter[] sqlparams = new SqlParameter[5];
 
             sqlparams[0] = new SqlParameter("@pName", SqlDbType.VarChar);
             sqlparams[0].Value = myTargetData.Name;
 
-            sqlparams[1] = new SqlParameter("@pPath", SqlDbType.VarChar);
-            sqlparams[1].Value = myTargetData.Path;
+            sqlparams[1] = new SqlParameter("@pLabel", SqlDbType.VarChar);
+            sqlparams[1].Value = myTargetData.Label;
 
-            sqlparams[2] = new SqlParameter("@pKind", SqlDbType.Int);
-            sqlparams[2].Value = myTargetData.Kind;
+            sqlparams[2] = new SqlParameter("@pExplanation", SqlDbType.VarChar);
+            sqlparams[2].Value = myTargetData.Explanation;
 
-            sqlparams[3] = new SqlParameter("@pId", SqlDbType.Int);
-            sqlparams[3].Value = myTargetData.Id;
+            sqlparams[3] = new SqlParameter("@pKind", SqlDbType.Int);
+            sqlparams[3].Value = myTargetData.Kind;
+
+            sqlparams[4] = new SqlParameter("@pId", SqlDbType.Int);
+            sqlparams[5].Value = myTargetData.Id;
 
             myDbCon.openConnection();
 

@@ -9,6 +9,7 @@ namespace wpfMovieListMake
     class MovieContents
     {
         public static string REGEX_MOVIE_EXTENTION = @".*\.avi$|.*\.wmv$|.*\.mpg$|.*ts$|.*divx$|.*mp4$|.*asf$|.*mkv$|.*rm$|.*3gp$|.*flv$";
+        public static string REGEX_JPEG_EXTENTION = @".*\.jpg$";
         //  @".*\.avi$|.*\.wmv$|.*\.mpg$|.*ts$|.*divx$|.*mp4$|.*asf$|.*jpg$|.*jpeg$|.*iso$|.*mkv$";
 
         public int Id { get; set; }

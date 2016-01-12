@@ -15,7 +15,7 @@ namespace wpfMovieListMake
         public double TotalLength = 0;
         public int FileCount = 0;
 
-        public List<MovieFileContents> GetDirFiles(string myPathname)
+        public List<MovieFileContents> GetDirFiles(string myPathname, bool myIsJpegOnly)
         {
             if (!Directory.Exists(myPathname))
                 return null;
@@ -25,7 +25,12 @@ namespace wpfMovieListMake
 
             string[] files = Directory.GetFiles(myPathname);
 
-            Regex regex = new Regex(MovieFileContents.REGEX_MOVIE_EXTENTION);
+            Regex regex;
+            if (myIsJpegOnly)
+                regex = new Regex(MovieFileContents.REGEX_JPEG_EXTENTION);
+            else
+                regex = new Regex(MovieFileContents.REGEX_MOVIE_EXTENTION);
+
             List<string> listFiles = new List<string>();
 
             foreach (var file in files)

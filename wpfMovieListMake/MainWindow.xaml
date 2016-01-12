@@ -116,7 +116,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <ComboBox Name="cmbMovieContentsPath" Height="30" Margin="5,10,5,5" FontSize="16" DisplayMemberPath="Path" />
+                <ComboBox Name="cmbMovieContentsPath" Height="30" Margin="5,10,5,5" FontSize="16" DisplayMemberPath="Explanation" />
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180" />
@@ -126,7 +126,7 @@
                               Height="160" Width="170" Margin="10,10,0,5" FontSize="14" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                               SelectionChanged="dgridSiteInfo_SelectionChanged">
                         <DataGrid.Columns>
-                            <DataGridTextColumn MinWidth="148" Binding="{Binding Path=Name}" />
+                            <DataGridTextColumn MinWidth="148" Binding="{Binding Path=Label}" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <TabControl Margin="10,10,0,5" Name="tabctrlFunction" Width="500" Height="160" HorizontalAlignment="Right" Grid.Column="1">
@@ -234,9 +234,14 @@
                         </TabItem>
                         <TabItem Name="tabitemDirExport" Header="DIR出力">
                             <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <CheckBox Name="chkDirExportJpegOnly" Content="JPEGのみ" Margin="5,2,5,2" HorizontalAlignment="Right" VerticalAlignment="Center" />
                                 <ListBox Name="lstTargetDir" Margin="5,5,5,5"
                                          SelectedIndex="0"
-                                         Grid.RowSpan="3" Grid.ColumnSpan="2">
+                                         Grid.Row="1" Grid.ColumnSpan="2">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Path=.}" />
@@ -248,11 +253,11 @@
                         <TabItem Name="tabitemSiteExport" Header="サイト出力">
                             <Grid>
                                 <ListBox Name="lstTargetSite" Margin="5,5,5,5"
-                                         SelectedIndex="0" SelectedValuePath="Name"
+                                         SelectedIndex="0" SelectedValuePath="Label"
                                          Grid.RowSpan="3" Grid.ColumnSpan="2">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Path=Name}" />
+                                            <TextBlock Text="{Binding Path=Label}" />
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>

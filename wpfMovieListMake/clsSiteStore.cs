@@ -7,7 +7,7 @@ using System.IO;
 
 namespace wpfMovieListMake
 {
-    class SiteStoreNameComparer : EqualityComparer<SiteStore>
+    class SiteStoreLabelComparer : EqualityComparer<SiteStore>
     {
         public override bool Equals(SiteStore myData1, SiteStore myData2)
         {
@@ -21,12 +21,12 @@ namespace wpfMovieListMake
                 return false;
             }
 
-            return (myData1.Name == myData2.Name);
+            return (myData1.Label == myData2.Label);
         }
 
         public override int GetHashCode(SiteStore myData)
         {
-            return myData.Name.GetHashCode();
+            return myData.Label.GetHashCode();
         }
     }
     public class SiteStore : INotifyPropertyChanged
@@ -43,7 +43,8 @@ namespace wpfMovieListMake
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Path { get; set; }
+        public string Explanation { get; set; }
+        public string Label { get; set; }
         public int Kind { get; set; }
 
         private bool _IsNotExists;

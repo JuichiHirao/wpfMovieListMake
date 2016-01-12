@@ -70,7 +70,7 @@ namespace wpfMovieListMake
 
             // サイト情報を取得
             List<SiteStore> listSiteAll = CommonMethod.GetSiteStore(dbcon);
-            SiteStoreNameComparer sitecomp = new SiteStoreNameComparer();
+            SiteStoreLabelComparer sitecomp = new SiteStoreLabelComparer();
             lstTargetSite.ItemsSource = listSiteAll.Distinct(sitecomp);
 
             DisplayGrid();
@@ -82,7 +82,7 @@ namespace wpfMovieListMake
             listSelectSite = new List<SiteStore>();
             listSelectSite = GetSelectSiteFromXmlFile();
 
-            SiteStoreNameComparer sitecomp = new SiteStoreNameComparer();
+            SiteStoreLabelComparer sitecomp = new SiteStoreLabelComparer();
             dgridSiteInfo.ItemsSource = listSelectSite.Distinct(sitecomp);
 
             // dgridDisplaySelectSite：DBからサイト情報を取得して設定と一致する行にチェックを付けて表示
@@ -90,7 +90,7 @@ namespace wpfMovieListMake
             foreach (SiteStore site in listSiteStore)
             {
                 var data = from matchdata in listSelectSite
-                           where matchdata.Name == site.Name && matchdata.Path == site.Path
+                           where matchdata.Label == site.Label && matchdata.Explanation == site.Explanation
                            select matchdata;
 
                 if (data.Count() >= 1)
@@ -121,7 +121,12 @@ namespace wpfMovieListMake
                 MovieFileContentsParent parent = new MovieFileContentsParent();
 
                 string dir = lstTargetDir.SelectedItem.ToString();
-                List<MovieFileContents> listDirFiles = parent.GetDirFiles(dir);
+
+                bool isJpegOnly = false;
+                if (chkDirExportJpegOnly.IsChecked != null)
+                    isJpegOnly = (bool)chkDirExportJpegOnly.IsChecked;
+
+                List<MovieFileContents> listDirFiles = parent.GetDirFiles(dir, isJpegOnly);
                 List <MovieFileContents> listDbFiles = parent.GetDbContents(dir);
 
                 List<MovieFileContents> listTargetFiles = new List<MovieFileContents>();
@@ -278,7 +283,7 @@ namespace wpfMovieListMake
 
                 // 画面の設定項目をThread実行からの参照用にTargetFilesParentに設定する
                 DetailInfoSetting setting = new DetailInfoSetting();
-                setting.SiteName = dispinfoSiteStore.Name;
+                setting.SiteName = dispinfoSiteStore.Label;
                 setting.MakeListKind = ConvertSelectedItem(cmbMakeListKind);
                 setting.MakeListExt = ConvertSelectedItem(cmbMakeListExt);
                 setting.MakeListMovieFolder = ConvertSelectedItem(cmbMakeListMovieFolder);
@@ -359,8 +364,8 @@ namespace wpfMovieListMake
             List<SiteStore> listSiteStore = CommonMethod.GetSiteStore(dbcon);
 
             var pathdata = from matchdata in listSiteStore
-                           where matchdata.Name == dispinfoSiteStore.Name
-                           orderby matchdata.Path descending
+                           where matchdata.Label == dispinfoSiteStore.Label
+                           orderby matchdata.Explanation descending
                            select matchdata;
 
             cmbMovieContentsPath.ItemsSource = pathdata;
@@ -764,12 +769,13 @@ namespace wpfMovieListMake
             if (kind.Equals("WPL"))
             {
                 string[] arrTargetExt = null;
-                if (dispinfoSiteStore.Name.Equals("舞ワイフ"))
+                if (dispinfoSiteStore.Label.Equals("舞ワイフ"))
                 {
-                    arrTargetExt = new string[3];
+                    arrTargetExt = new string[4];
                     arrTargetExt[0] = "w_*";
                     arrTargetExt[1] = "31_*";
                     arrTargetExt[2] = "Bw_*";
+                    arrTargetExt[3] = "00*";
                     //arrTargetExt[0] = "w_*." + ext;
                     //arrTargetExt[1] = "Bw_*." + ext;
                     //arrTargetExt[2] = "31_*." + ext;
@@ -786,12 +792,13 @@ namespace wpfMovieListMake
             else
             {
                 string[] arrTargetExt = null;
-                if (dispinfoSiteStore.Name.Equals("舞ワイフ"))
+                if (dispinfoSiteStore.Label.Equals("舞ワイフ"))
                 {
-                    arrTargetExt = new string[3];
+                    arrTargetExt = new string[4];
                     arrTargetExt[0] = "w_*";
                     arrTargetExt[1] = "31_*";
                     arrTargetExt[2] = "Bw_*";
+                    arrTargetExt[3] = "00*";
                     //arrTargetExt[0] = "w_*." + ext;
                     //arrTargetExt[1] = "Bw_*." + ext;
                     //arrTargetExt[2] = "31_*." + ext;
@@ -882,7 +889,7 @@ namespace wpfMovieListMake
             {
                 string queryString = "";
 
-                queryString = "SELECT PATH FROM MOVIE_SITESTORE WHERE NAME = '" + mySiteName + "'";
+                queryString = "SELECT EXPLANATION FROM MOVIE_GROUP WHERE LABEL = '" + mySiteName + "'";
 
                 SqlDataAdapter adapter = new SqlDataAdapter(queryString, myDbCon.getSqlConnection());
 
@@ -891,7 +898,7 @@ namespace wpfMovieListMake
 
                 // 参考： wpfMovieManager::MainWIndow.xaml GridvGroupDatabaseFill
                 var rows = dtsetSitePath.Tables["SitePath"].AsEnumerable();
-                var query = rows.Select(el => el["PATH"].ToString());
+                var query = rows.Select(el => el["EXPLANATION"].ToString());
 
                 return query.ToList<string>();
             }
@@ -932,8 +939,8 @@ namespace wpfMovieListMake
 
                 try
                 {
-                    sitestore.Name = xcon.Element("NAME").Value;
-                    sitestore.Path = xcon.Element("PATH").Value;
+                    sitestore.Label = xcon.Element("LABEL").Value;
+                    sitestore.Explanation = xcon.Element("PATH").Value;
                 }
                 catch (NullReferenceException)
                 {
@@ -962,8 +969,8 @@ namespace wpfMovieListMake
                 if (site.IsSelected)
                 {
                     root.Add(new XElement("SiteInfo"
-                                        , new XElement("NAME", site.Name)
-                                        , new XElement("PATH", site.Path)
+                                        , new XElement("LABEL", site.Label)
+                                        , new XElement("PATH", site.Explanation)
                                 ));
                 }
             }
@@ -1051,7 +1058,7 @@ namespace wpfMovieListMake
         {
             DbConnection dbcon = new DbConnection();
 
-            string queryString = "SELECT ID, NAME, REMARK, ISNULL(ACTIVITY_DATE, '1900/1/1') AS ACTIVITY_DATE FROM MOVIE_ACTRESS WHERE REMARK LIKE 'DIR情報%' ORDER BY ACTIVITY_DATE";
+            string queryString = "SELECT ID, NAME, EXPLANATION, ISNULL(CREATE_DATE, '1900/1/1') AS CREATE_DATE FROM MOVIE_GROUP WHERE KIND = 1ORDER BY CREATE_DATE DESC";
 
             dbcon.openConnection();
 
@@ -1065,10 +1072,7 @@ namespace wpfMovieListMake
                 {
                     string ContentsPath = DbExportCommon.GetDbString(reader, 2);
 
-                    string strDir = Regex.Match(ContentsPath, "【(?<abc>.*)】").Groups["abc"].Value;
-
-                    if (strDir != null)
-                        listData.Add(strDir);
+                    listData.Add(ContentsPath);
                 }
             } while (reader.NextResult());
             reader.Close();
@@ -1079,7 +1083,7 @@ namespace wpfMovieListMake
         {
             DbConnection dbcon = new DbConnection();
 
-            string queryString = "SELECT ID, NAME, REMARK, ISNULL(ACTIVITY_DATE, '1900/1/1') AS ACTIVITY_DATE FROM MOVIE_ACTRESS WHERE REMARK LIKE 'DIR情報%' ORDER BY ACTIVITY_DATE";
+            string queryString = "SELECT ID, NAME, EXPLANATION, ISNULL(CREATE_DATE, '1900/1/1') AS CREATE_DATE FROM MOVIE_GROUP WHERE KIND = 1ORDER BY CREATE_DATE DESC";
 
             dbcon.openConnection();
 
@@ -1093,10 +1097,7 @@ namespace wpfMovieListMake
                 {
                     string ContentsPath = DbExportCommon.GetDbString(reader, 2);
 
-                    string strDir = Regex.Match(ContentsPath, "【(?<abc>.*)】").Groups["abc"].Value;
-
-                    if (strDir != null)
-                        listData.Add(strDir);
+                    listData.Add(ContentsPath);
                 }
             } while (reader.NextResult());
             reader.Close();
