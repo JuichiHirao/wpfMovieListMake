@@ -794,11 +794,12 @@ namespace wpfMovieListMake
                 string[] arrTargetExt = null;
                 if (dispinfoSiteStore.Label.Equals("舞ワイフ"))
                 {
-                    arrTargetExt = new string[4];
+                    arrTargetExt = new string[5];
                     arrTargetExt[0] = "w_*";
                     arrTargetExt[1] = "31_*";
                     arrTargetExt[2] = "Bw_*";
                     arrTargetExt[3] = "00*";
+                    arrTargetExt[4] = "20*";
                     //arrTargetExt[0] = "w_*." + ext;
                     //arrTargetExt[1] = "Bw_*." + ext;
                     //arrTargetExt[2] = "31_*." + ext;

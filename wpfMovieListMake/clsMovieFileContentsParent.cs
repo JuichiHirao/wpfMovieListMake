@@ -92,7 +92,7 @@ namespace wpfMovieListMake
                     }
                 }
 
-                Regex regexManyFile = new Regex("_[0-9]$");
+                Regex regexManyFile = new Regex("_[0-9]{1,3}$");
 
                 if (regexManyFile.IsMatch(ExtWithoutName))
                 {

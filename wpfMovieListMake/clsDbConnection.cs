@@ -17,7 +17,7 @@ namespace wpfMovieListMake
 
         public DbConnection()
         {
-            settings = "Data Source=tcp:192.168.11.199;Initial Catalog=jhContents;Persist Security Info=True;User ID=sa;Password=11Jhirao";
+            settings = "Data Source=tcp:WinServer2016DB;Initial Catalog=jhContents;Persist Security Info=True;User ID=sa;Password=11Jhirao";
 //            settings = "Data Source=tcp:192.168.11.199;Initial Catalog=jhContents;Persist Security Info=True;User ID=sa;Password=11Jhirao";
 
             dbcon = new SqlConnection(settings);
